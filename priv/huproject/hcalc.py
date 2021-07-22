@@ -14,7 +14,7 @@ if __name__ == "__main__":
         x = input(':hcalc:> ')
         op = re.findall('[+-]', x)
         if len(op) > 1:
-            print("Cuentas de más de una operación no están soportadas\n")
+            print("Cuentas de más de una operación no están soportadas")
             continue
         x = re.split('[+-]', x)
         for i in range(len(x)): x[i] = x[i].split(':')
@@ -25,5 +25,4 @@ if __name__ == "__main__":
         if len(a) != 2: a.insert(0, 0)
         if len(b) != 2: b.insert(0, 0)
         print(calc(a, op, b))
-        print('\n')
 
