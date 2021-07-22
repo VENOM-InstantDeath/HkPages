@@ -36,7 +36,7 @@ def list(f):
                 for i in L: F.write(f"{i}\n")
                 F.close()
                 break
-            
+
             elif O == "2":
                 print("\n\t\tBorrar tarea")
                 T = input("\n\nTarea: ")
@@ -172,7 +172,7 @@ def main():
             for i in D['T']: print(i)
             input()
             continue
-        
+
         if cmd[0] == "tsh":
             tem = input("Nombre de plantilla: ") if len(cmd) != 2 else cmd[1]
             if tem not in D['T']: continue
