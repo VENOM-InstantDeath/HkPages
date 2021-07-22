@@ -12,5 +12,6 @@ h, m = (n.hour, n.minute)
 
 s=(24*3600)-((h*3600)+(m*60))
 
+print("  Time left")
 print("In hours: %s:%s" % (s//3600, (s%3600)//60))
 print("In seconds: %s" % s)
