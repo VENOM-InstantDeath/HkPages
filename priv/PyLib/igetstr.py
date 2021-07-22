@@ -1,54 +1,157 @@
 import curses
 from curses.textpad import rectangle
 
-def igetstr(stdscr, y, x, l, strl=150):
+def clr(stdscr, y, x, l):
     p = 0
-    e = 0
-    s = ""
-    llim = 0
-    rlim = l - x
+    for i in range(l-x+1):
+        stdscr.addstr(y, x+p, ' ')
+        p += 1
+
+def igetstr(stdscr, y, x, l, strl=150):
+    tp = 0
+    p  = 0
+    e  = 0
+
+    s  = []
+    
+    ll = 0      # Left Limit
+    rl = 0      # Right Limit
+    pl = l-x+1  # Pointer Limit      # Chupenme un huevo comentarios de mierda
+    er = 0      # E var Right Limit  # No significa lo que dicen.
+    el = 0      # E var Left Limit   # Encima me da alta flojera corregirlos.
+
     stdscr.move(y, x)
+
+    k = ""
     while True:
-        k = stdscr.getch()
-        if k == 260:
-            if e:
-                if e == llim:
-                    llim -= 1
-                    rlim -= 1
-                    for i in s[llim:rlim]:
-                        stdscr.addstr(t, x+p, i)
-                        p += 1
-                    p = 0
-                    stdscr.move(y,x+p)
+
+        stdscr.move(15,0);stdscr.clrtobot()
+        stdscr.move(y, x+p)
+
+        k = stdscr.get_wch()
+
+        if k == 260:  # left
+            if ll != 0 and not p:
+                if er < rl:
+                    er += 1
                 else:
-                    p -= 1
-                    stdscr.move(y,x+p)
+                    er -= 1
+                ll -= 1
+                rl -= 1
+                clr(stdscr, y, x, l)
+                for i in s[ll:er]:
+                    stdscr.addch(y,x+p,i)
+                    p += 1
+                p = 0
                 e -= 1
-        elif k == 261;
-            if e != strl:
-                if e == rlim:
-                    llim += 1
-                    rlim += 1
-                    p = 0
-                    for i in s[llim:rlim]:
-                        stdscr.addstr(t, x+p, i)
-                        p += 1
+            elif e:
+                p -= 1
+                e -= 1
+        
+        elif k == 261:  # right
+            if p == pl and e != len(s):
+                p = 0
+                ll += 1
+                rl += 1
+                er += 1
+                clr(stdscr, y, x, l)
+                for i in s[ll:er]:
+                    stdscr.addch(y,x+p,i)
+                    p += 1
+                e += 1
+            elif p != pl and e != rl:
+                e += 1
+                p += 1
+
+        elif k == 263:  # backspace
+            if ll != 0 and len(s) > pl and p != pl:  # Ya estoy tan podrido que ni quiero comentar.
+                s.pop(e-1)
+                tp = p
+                er += 1
+                clr(stdscr, y, x, l)
+                p = 0
+                for i in s[ll:er]:
+                    stdscr.addch(y, x+p, i)
+                    p += 1
+                p = tp-1
+                e -= 1
+                er -= 1
+                continue
+            if ll != 0 and not p:  # Esta chota es para cuando borrás desde el inicio en segunda columna
+                s.pop(e-1)
+                tp = p
+                ll -= 1
+                rl -= 1
+                if er < rl:
+                    er += 1
+                else:
+                    er -= 1
+                clr(stdscr, y, x, l)
+                for i in s[ll:er]:
+                    stdscr.addch(y, x+p, i)
+                    p += 1
+                p = 0
+                e -= 1
+                continue
+            elif e:  # El normal
+                s.pop(e-1)
+                tp = p
+                p = 0
+                clr(stdscr, y, x, l)
+                for i in s[ll:er]:
+                    stdscr.addch(y, x+p, i)
+                    p += 1
+                p = tp-1
+                e -= 1
+                rl -= 1
+                er -= 1
+                continue
+
+        elif k == '\n':
+            ss = ""
+            for i in s:
+                ss += i
+            return ss
+
         else:
-            stdscr.addstr(y, x+p, chr(k))
-            p += 1
-            e += 1
-    return
+            if type(k) == int:
+                continue
+            if e != strl:
+                if e == rl and rl != strl and rl > l-x:
+                    ll += 1
+                    rl += 1
+                    s.insert(e,k)
+                    p = 0
+                    er += 1
+                    for i in s[ll:er]:
+                        stdscr.addch(y,x+p,i)
+                        p += 1
+                    e += 1
+                    continue
+                tp = p
+                p = 0
+                er += 1
+                s.insert(e,k)
+                for i in s[ll:er]:
+                    stdscr.addch(y, x+p, i)
+                    p += 1
+                p = tp+1
+                e += 1
+                rl += 1
 
-def main(stdscr):
-    while True:
-        k = stdscr.getch()
+if __name__ == "__main__":
+    def main(stdscr):
+        while True:
+            k = stdscr.get_wch()
+            stdscr.clear()
+            if k == 'q':
+                break
+            stdscr.addstr(str(k))
+            continue
+        rectangle(stdscr, 10, 20, 12, 50)
+        s = igetstr(stdscr, 11, 21, 49)
         stdscr.clear()
-        if k == 113:
-            break
-        stdscr.addstr(str(k))
-        continue
-    rectangle(stdscr, 10, 20, 12, 50)
-    igetstr(stdscr, 11, 21, 49)
-    stdscr.getch()
+        stdscr.addstr(0,0,s)
+        stdscr.getch()
 
-curses.wrapper(main)
+    curses.wrapper(main)
