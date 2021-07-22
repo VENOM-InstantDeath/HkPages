@@ -3,6 +3,7 @@ import curses
 from os import listdir, _exit
 from re import match
 from getpass import getpass
+from igetstr import igetstr
 from menu import menu, scroll
 from curses.textpad import rectangle
 
@@ -64,7 +65,7 @@ def chid(stdscr, subclient):
         stdscr.addstr(max.ceny-3, max.cenx-24//2, "Ingresa el mensaje")
         rectangle(stdscr, max.ceny, (max.cenx-24//2)-5, max.ceny+2, (max.cenx-24//2)+28)
         stdscr.addstr(max.ceny+6, max.cenx-58//2, "Pista: Si escribes '.' volverás a la pantalla anterior.")
-        msg = stdscr.getstr(max.ceny+1, (max.cenx-24//2)-4, 32).decode().strip()
+        msg = igetstr(stdscr, max.ceny+1, (max.cenx-24//2)-4, 32).decode().strip()
         if msg == '.':
             break
         try: subclient.send_message(cid, msg, messageType=109)
