@@ -12,6 +12,7 @@ if __name__ == "__main__":
     import re
     while True:
         x = input(':hcalc:> ')
+        if x == "exit": exit(0)
         op = re.findall('[+-]', x)
         if len(op) > 1:
             print("Cuentas de más de una operación no están soportadas")
